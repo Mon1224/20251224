@@ -1,0 +1,207 @@
+==== Hard Case Analysis Report ====
+
+
+==============================
+ID = 341
+REVIEW: 还没有我买的50多的za好用 目前最难用的一款隔离 根本不好晕开 也遮不住什么
+
+[Gold] 2 quads:
+  - (A="_", O="不好晕开", C="使用体验", P="正面")
+  - (A="_", O="遮不住什么", C="功效", P="负面")
+
+[Pred] 4 quads:
+  - (A="_", O="好用", C="整体", P="正面")
+  - (A="_", O="最难用", C="整体", P="负面")
+  - (A="_", O="根本不好晕开", C="使用体验", P="负面")
+  - (A="_", O="遮不住", C="功效", P="负面")
+
+[Hit] 0 quads:
+  (none)
+
+[Pred-only] 4 quads (extra/wrong):
+  * ('_', '好用', '整体', '正面')  =>  opinion_not_in_gold (spurious_or_boundary_or_synonym)
+  * ('_', '最难用', '整体', '负面')  =>  opinion_not_in_gold (spurious_or_boundary_or_synonym)
+  * ('_', '根本不好晕开', '使用体验', '负面')  =>  opinion_not_in_gold (spurious_or_boundary_or_synonym)
+  * ('_', '遮不住', '功效', '负面')  =>  opinion_not_in_gold (spurious_or_boundary_or_synonym)
+[Gold-only] 2 quads (missed):
+  * ('_', '不好晕开', '使用体验', '正面')  =>  missed_opinion (model_didnt_extract_or_boundary)
+  * ('_', '遮不住什么', '功效', '负面')  =>  missed_opinion (model_didnt_extract_or_boundary)
+
+==============================
+ID = 505
+REVIEW: 用了感觉有酒精味道，但是很快就挥发，我敏感肌肤，用了不过敏，比安耐晒质地清爽，不油腻，而且擦了有提亮肤色现货
+
+[Gold] 4 quads:
+  - (A="_", O="不油腻", C="使用体验", P="正面")
+  - (A="_", O="有提亮", C="功效", P="正面")
+  - (A="味道", O="_", C="气味", P="中性")
+  - (A="质地", O="清爽", C="使用体验", P="正面")
+
+[Pred] 5 quads:
+  - (A="_", O="不油腻", C="使用体验", P="正面")
+  - (A="_", O="不过敏", C="使用体验", P="正面")
+  - (A="_", O="提亮肤色", C="功效", P="正面")
+  - (A="_", O="清爽", C="使用体验", P="正面")
+  - (A="酒精味道", O="有", C="气味", P="负面")
+
+[Hit] 1 quads:
+  - (A="_", O="不油腻", C="使用体验", P="正面")
+
+[Pred-only] 4 quads (extra/wrong):
+  * ('_', '不过敏', '使用体验', '正面')  =>  opinion_not_in_gold (spurious_or_boundary_or_synonym)
+  * ('_', '提亮肤色', '功效', '正面')  =>  opinion_not_in_gold (spurious_or_boundary_or_synonym)
+  * ('_', '清爽', '使用体验', '正面')  =>  aspect_wrong
+  * ('酒精味道', '有', '气味', '负面')  =>  opinion_not_in_gold (spurious_or_boundary_or_synonym)
+[Gold-only] 3 quads (missed):
+  * ('_', '有提亮', '功效', '正面')  =>  missed_opinion (model_didnt_extract_or_boundary)
+  * ('味道', '_', '气味', '中性')  =>  missed_opinion (model_didnt_extract_or_boundary)
+  * ('质地', '清爽', '使用体验', '正面')  =>  aspect_wrong
+
+==============================
+ID = 3180
+REVIEW: 好用，一直在用，第一次在**买，包装严实，**物流太棒了，刚好用完，物流快一天到货特别救急?
+
+[Gold] 2 quads:
+  - (A="包装", O="严实", C="物流", P="正面")
+  - (A="物流", O="太棒了", C="物流", P="正面")
+
+[Pred] 3 quads:
+  - (A="_", O="好用", C="整体", P="正面")
+  - (A="包装", O="严实", C="包装", P="正面")
+  - (A="包装", O="快", C="物流", P="正面")
+
+[Hit] 0 quads:
+  (none)
+
+[Pred-only] 3 quads (extra/wrong):
+  * ('_', '好用', '整体', '正面')  =>  opinion_not_in_gold (spurious_or_boundary_or_synonym)
+  * ('包装', '严实', '包装', '正面')  =>  category_wrong
+  * ('包装', '快', '物流', '正面')  =>  opinion_not_in_gold (spurious_or_boundary_or_synonym)
+[Gold-only] 2 quads (missed):
+  * ('包装', '严实', '物流', '正面')  =>  category_wrong
+  * ('物流', '太棒了', '物流', '正面')  =>  missed_opinion (model_didnt_extract_or_boundary)
+
+==============================
+ID = 1185
+REVIEW: 好评，洗得干净不紧绷，好闻的海洋清新味~
+
+[Gold] 4 quads:
+  - (A="_", O="不紧绷", C="使用体验", P="正面")
+  - (A="_", O="好评", C="整体", P="正面")
+  - (A="_", O="好闻", C="气味", P="正面")
+  - (A="_", O="干净", C="使用体验", P="正面")
+
+[Pred] 5 quads:
+  - (A="_", O="不紧绷", C="使用体验", P="正面")
+  - (A="_", O="好评", C="整体", P="正面")
+  - (A="_", O="好闻的", C="气味", P="正面")
+  - (A="_", O="洗得干净", C="使用体验", P="正面")
+  - (A="_", O="海洋清新味", C="气味", P="正面")
+
+[Hit] 2 quads:
+  - (A="_", O="不紧绷", C="使用体验", P="正面")
+  - (A="_", O="好评", C="整体", P="正面")
+
+[Pred-only] 3 quads (extra/wrong):
+  * ('_', '好闻的', '气味', '正面')  =>  opinion_not_in_gold (spurious_or_boundary_or_synonym)
+  * ('_', '洗得干净', '使用体验', '正面')  =>  opinion_not_in_gold (spurious_or_boundary_or_synonym)
+  * ('_', '海洋清新味', '气味', '正面')  =>  opinion_not_in_gold (spurious_or_boundary_or_synonym)
+[Gold-only] 2 quads (missed):
+  * ('_', '好闻', '气味', '正面')  =>  missed_opinion (model_didnt_extract_or_boundary)
+  * ('_', '干净', '使用体验', '正面')  =>  missed_opinion (model_didnt_extract_or_boundary)
+
+==============================
+ID = 2127
+REVIEW: 第一次用，听说很好用，抹在脸上微微有一点点白，成膜速度非常快，而且不油腻，很清爽很喜欢，应该会回购的，支持嘉娜宝
+
+[Gold] 5 quads:
+  - (A="_", O="不油腻", C="使用体验", P="正面")
+  - (A="_", O="很喜欢", C="整体", P="正面")
+  - (A="_", O="很清爽", C="使用体验", P="正面")
+  - (A="_", O="有一点点白", C="功效", P="中性")
+  - (A="成膜速度", O="非常快", C="功效", P="正面")
+
+[Pred] 6 quads:
+  - (A="_", O="不油腻", C="使用体验", P="正面")
+  - (A="_", O="很喜欢", C="整体", P="正面")
+  - (A="_", O="很好用", C="整体", P="正面")
+  - (A="_", O="很清爽", C="使用体验", P="正面")
+  - (A="_", O="有一点点白", C="功效", P="正面")
+  - (A="成膜速度", O="非常快", C="使用体验", P="正面")
+
+[Hit] 3 quads:
+  - (A="_", O="不油腻", C="使用体验", P="正面")
+  - (A="_", O="很喜欢", C="整体", P="正面")
+  - (A="_", O="很清爽", C="使用体验", P="正面")
+
+[Pred-only] 3 quads (extra/wrong):
+  * ('_', '很好用', '整体', '正面')  =>  opinion_not_in_gold (spurious_or_boundary_or_synonym)
+  * ('_', '有一点点白', '功效', '正面')  =>  polarity_wrong
+  * ('成膜速度', '非常快', '使用体验', '正面')  =>  category_wrong
+[Gold-only] 2 quads (missed):
+  * ('_', '有一点点白', '功效', '中性')  =>  polarity_wrong
+  * ('成膜速度', '非常快', '功效', '正面')  =>  category_wrong
+
+==============================
+ID = 2248
+REVIEW: 保湿效果还好吧，还喜欢！
+
+[Gold] 2 quads:
+  - (A="_", O="还喜欢", C="整体", P="正面")
+  - (A="保湿效果", O="还好吧", C="功效", P="正面")
+
+[Pred] 2 quads:
+  - (A="_", O="喜欢", C="整体", P="正面")
+  - (A="保湿效果", O="还好", C="功效", P="正面")
+
+[Hit] 0 quads:
+  (none)
+
+[Pred-only] 2 quads (extra/wrong):
+  * ('_', '喜欢', '整体', '正面')  =>  opinion_not_in_gold (spurious_or_boundary_or_synonym)
+  * ('保湿效果', '还好', '功效', '正面')  =>  opinion_not_in_gold (spurious_or_boundary_or_synonym)
+[Gold-only] 2 quads (missed):
+  * ('_', '还喜欢', '整体', '正面')  =>  missed_opinion (model_didnt_extract_or_boundary)
+  * ('保湿效果', '还好吧', '功效', '正面')  =>  missed_opinion (model_didnt_extract_or_boundary)
+
+==============================
+ID = 364
+REVIEW: 去年给老妈买过  说好用  活动买的  就是看着包装和原来的稍微有点不一样  不知道用着怎么样了
+
+[Gold] 2 quads:
+  - (A="包装", O="_", C="包装", P="负面")
+  - (A="活动", O="_", C="价格", P="正面")
+
+[Pred] 2 quads:
+  - (A="_", O="好用", C="整体", P="正面")
+  - (A="包装", O="有点不一样", C="包装", P="中性")
+
+[Hit] 0 quads:
+  (none)
+
+[Pred-only] 2 quads (extra/wrong):
+  * ('_', '好用', '整体', '正面')  =>  opinion_not_in_gold (spurious_or_boundary_or_synonym)
+  * ('包装', '有点不一样', '包装', '中性')  =>  opinion_not_in_gold (spurious_or_boundary_or_synonym)
+[Gold-only] 2 quads (missed):
+  * ('包装', '_', '包装', '负面')  =>  missed_opinion (model_didnt_extract_or_boundary)
+  * ('活动', '_', '价格', '正面')  =>  missed_opinion (model_didnt_extract_or_boundary)
+
+==============================
+ID = 2429
+REVIEW: 手的图片是原图哦，不过涂了隔离霜，美白效果没话说了，特别好
+
+[Gold] 1 quads:
+  - (A="美白效果", O="特别好", C="功效", P="正面")
+
+[Pred] 2 quads:
+  - (A="_", O="特别好", C="整体", P="正面")
+  - (A="美白效果", O="没话说", C="功效", P="正面")
+
+[Hit] 0 quads:
+  (none)
+
+[Pred-only] 2 quads (extra/wrong):
+  * ('_', '特别好', '整体', '正面')  =>  pairing_mismatch_or_multi_field_wrong: aspect_wrong+category_wrong
+  * ('美白效果', '没话说', '功效', '正面')  =>  opinion_not_in_gold (spurious_or_boundary_or_synonym)
+[Gold-only] 1 quads (missed):
+  * ('美白效果', '特别好', '功效', '正面')  =>  pairing_mismatch_or_multi_field_wrong: aspect_wrong+category_wrong

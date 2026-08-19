@@ -1,0 +1,11 @@
+﻿side,error_type,count
+gold_only,missed_opinion (model_didnt_extract_or_boundary),11
+gold_only,category_wrong,2
+gold_only,aspect_wrong,1
+gold_only,polarity_wrong,1
+gold_only,pairing_mismatch_or_multi_field_wrong: aspect_wrong+category_wrong,1
+pred_only,opinion_not_in_gold (spurious_or_boundary_or_synonym),18
+pred_only,category_wrong,2
+pred_only,aspect_wrong,1
+pred_only,polarity_wrong,1
+pred_only,pairing_mismatch_or_multi_field_wrong: aspect_wrong+category_wrong,1
