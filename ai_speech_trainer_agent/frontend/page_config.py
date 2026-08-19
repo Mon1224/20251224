@@ -1,6 +1,8 @@
 import streamlit as st
+from pathlib import Path
 from sidebar import render_sidebar
-import os
+
+STYLE_CSS_PATH = Path(__file__).resolve().parent / "style.css"
 
 
 def render_page_config():
@@ -11,11 +13,9 @@ def render_page_config():
         initial_sidebar_state="auto",
         layout="wide")
 
-    # 获取当前文件所在目录
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    css_path = os.path.join(current_dir, "style.css")
-
-    with open(css_path, encoding="utf-8") as f:
+    # Load external CSS. The path is resolved from this file's location, so it
+    # works no matter which directory Streamlit is started from.
+    with open(STYLE_CSS_PATH, encoding="utf-8") as f:
         st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
     # Sidebar
@@ -24,7 +24,7 @@ def render_page_config():
     # Main title with an icon
     st.markdown(
         """
-        <div class="custom-header"'>
+        <div class="custom-header">
             <span>🗣️ AI Speech Trainer</span><br>
             <span>Your personal coach for public speaking</span>
         </div>

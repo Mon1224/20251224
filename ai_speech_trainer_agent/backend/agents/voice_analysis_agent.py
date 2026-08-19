@@ -1,92 +1,48 @@
 from agno.agent import Agent
 from agno.models.dashscope import DashScope
-from backend.agents.tools.voice_analysis_tool import analyze_voice_attributes as voice_analysis_tool
+from agents.tools.voice_analysis_tool import analyze_voice_attributes as voice_analysis_tool
 from dotenv import load_dotenv
 import os
-import json
 
 load_dotenv()
 
-
-# =========================
-# Underlying LLM Agent
-# =========================
-_llm_voice_agent = Agent(
+# Define the voice analysis agent
+voice_analysis_agent = Agent(
     name="voice-analysis-agent",
     model=DashScope(
-        id="qwen-flash-character",
-        api_key=os.getenv("DASHSCOPE_API_KEY"),
-        base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"
+        id="qwen3.7-max-2026-05-17",
+        api_key=os.getenv("QWEN_API_KEY"),
+        base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
+        enable_thinking=True,
     ),
     tools=[voice_analysis_tool],
     description="""
-        You are a professional public speaking voice coach.
-        You NEVER analyze raw audio yourself.
-        You ALWAYS rely on the provided tool for transcription and acoustic metrics.
+        You are a voice analysis agent that evaluates vocal attributes like clarity, intonation, and pace.
+        You will return the transcribed text, speech rate, pitch variation, and volume consistency.
     """,
     instructions=[
-
-        "You MUST call the analyze_voice_attributes tool.",
-        "Do NOT manually infer speech metrics.",
-        "The input will be a video file path.",
-
-        "The tool returns transcription and acoustic metrics.",
-        "Your job is to interpret those metrics professionally.",
-
-        "Return ONLY valid JSON with the following structure:",
-
+        "You will be provided with an audio file of a person speaking.",
+        "Your task is to analyze the vocal attributes in the audio to detect speech rate, pitch variation, and volume consistency.",
+        "The response MUST be in the following JSON format:",
+        "The response MUST be a single JSON object, not wrapped in an array or list.",
         "{",
-        '  "transcript": string,',
-        '  "acoustic_metrics": {',
-        '    "speech_rate_wpm": number,',
-        '    "pitch_variation": number,',
-        '    "volume_consistency": number',
-        "  },",
-        '  "professional_feedback": {',
-        '    "clarity": string,',
-        '    "intonation": string,',
-        '    "pace": string',
-        "  }",
+            '"transcription": [transcription]',
+            '"speech_rate_wpm": [speech_rate_wpm],',
+            '"pitch_variation": [pitch_variation],',
+            '"volume_consistency": [volume_consistency]',
         "}",
-
-        "Do NOT include markdown.",
-        "Do NOT include explanations.",
-        "Valid JSON only."
+        "The response MUST be in proper JSON format with keys and values in double quotes.",
+        "The final response MUST not include any other text or anything else other than the JSON response."
     ],
-    markdown=False,
-    debug_mode=True
+    markdown=True,
+    debug_mode=False
 )
 
+# audio = "../../videos/my_video.mp4"
+# prompt = f"Analyze vocal attributes in the audio file to detect speech rate, pitch variation, and volume consistency in the following audio: {audio}"
+# voice_analysis_agent.print_response(prompt, stream=True)
 
-# =========================
-# Wrapper Class (Stable Entry)
-# =========================
-class VoiceAnalysisAgent:
-
-    def run(self, video_path: str):
-
-        # 构造明确 prompt，避免模型猜
-        prompt = f"Analyze this video file: {video_path}"
-
-        response = _llm_voice_agent.run(prompt)
-
-        # agno 返回可能是字符串，需要转 dict
-        if isinstance(response, str):
-            try:
-                return json.loads(response)
-            except Exception:
-                return {
-                    "transcript": "",
-                    "acoustic_metrics": {},
-                    "professional_feedback": {
-                        "clarity": "Failed to parse model output.",
-                        "intonation": "",
-                        "pace": ""
-                    }
-                }
-
-        return response
-
-
-# 实例化对外使用
-voice_analysis_agent = VoiceAnalysisAgent()
+# # Run agent and return the response as a variable
+# response: RunResponse = voice_analysis_agent.run(prompt)
+# # Print the response in markdown format
+# pprint_run_response(response, markdown=True)
