@@ -1,0 +1,210 @@
+import json
+import re
+from langchain_core.messages import HumanMessage, AIMessage, AIMessageChunk, ToolMessage
+from core.execution_logger import log_chat_end, log_chat_start, log_error
+
+SYSTEM_NODES = {"summarize_history", "rewrite_query"}
+FINAL_RESPONSE_NODES = {"aggregate_answers"}
+FINAL_ANSWER_TITLE = "✅ Final Answer"
+
+SYSTEM_NODE_CONFIG = {
+    "rewrite_query":     {"title": "🔍 Query Analysis & Rewriting"},
+    "summarize_history": {"title": "📋 Chat History Summary"},
+}
+
+# --- Helpers ---
+
+def make_message(content, *, title=None, node=None):
+    msg = {"role": "assistant", "content": content}
+    if title or node:
+        msg["metadata"] = {k: v for k, v in {"title": title, "node": node}.items() if v}
+    return msg
+
+
+def find_msg_idx(messages, node):
+    return next(
+        (i for i, m in enumerate(messages) if m.get("metadata", {}).get("node") == node),
+        None,
+    )
+
+
+def parse_rewrite_json(buffer):
+    match = re.search(r"\{.*\}", buffer, re.DOTALL)
+    if not match:
+        return None
+    try:
+        return json.loads(match.group())
+    except Exception:
+        return None
+
+
+def format_rewrite_content(buffer):
+    data = parse_rewrite_json(buffer)
+    if not data:
+        return "⏳ Analyzing query..."
+    if data.get("is_clear"):
+        lines = ["✅ **Query is clear**"]
+        if data.get("questions"):
+            lines += ["\n**Rewritten queries:**"] + [f"- {q}" for q in data["questions"]]
+    else:
+        lines = ["❓ **Query is unclear**"]
+        clarification = data.get("clarification_needed", "")
+        if clarification and clarification.strip().lower() != "no":
+            lines.append(f"\nClarification needed: *{clarification}*")
+    return "\n".join(lines)
+
+# --- End of Helpers ---
+
+class ChatInterface:
+
+    def __init__(self, rag_system):
+        self.rag_system = rag_system
+
+    def _handle_system_node(self, chunk, node, response_messages, system_node_buffer):
+        """Update (or create) the collapsible system-node message and surface any clarification."""
+        system_node_buffer[node] = system_node_buffer.get(node, "") + chunk.content
+        buffer = system_node_buffer[node]
+        title  = SYSTEM_NODE_CONFIG[node]["title"]
+        content = format_rewrite_content(buffer) if node == "rewrite_query" else buffer
+
+        idx = find_msg_idx(response_messages, node)
+        if idx is None:
+            response_messages.append(make_message(content, title=title, node=node))
+        else:
+            response_messages[idx]["content"] = content
+
+        if node == "rewrite_query":
+            self._surface_clarification(buffer, response_messages)
+
+    def _surface_clarification(self, buffer, response_messages):
+        """If the query is unclear, add/update a plain clarification message."""
+        data          = parse_rewrite_json(buffer) or {}
+        clarification = data.get("clarification_needed", "")
+        if not data.get("is_clear") and clarification.strip().lower() not in ("", "no"):
+            cidx = find_msg_idx(response_messages, "clarification")
+            if cidx is None:
+                response_messages.append(make_message(clarification, node="clarification"))
+            else:
+                response_messages[cidx]["content"] = clarification
+
+    def _handle_tool_call(self, chunk, response_messages, active_tool_calls):
+        """Register new tool calls as collapsible messages."""
+        for tc in chunk.tool_calls:
+            if tc.get("id") and tc["id"] not in active_tool_calls:
+                response_messages.append(
+                    make_message(f"Running `{tc['name']}`...", title=f"🛠️ {tc['name']}")
+                )
+                active_tool_calls[tc["id"]] = len(response_messages) - 1
+
+    def _handle_tool_result(self, chunk, response_messages, active_tool_calls):
+        """Fill in the tool result inside the matching collapsible message."""
+        idx = active_tool_calls.get(chunk.tool_call_id)
+        if idx is not None:
+            preview = str(chunk.content)[:300]
+            suffix  = "\n..." if len(str(chunk.content)) > 300 else ""
+            response_messages[idx]["content"] = f"```\n{preview}{suffix}\n```"
+
+    def _handle_llm_token(self, chunk, node, response_messages):
+        """Append streaming LLM tokens to the last plain assistant message."""
+        last = response_messages[-1] if response_messages else None
+        is_final_bubble = (
+            last
+            and last.get("role") == "assistant"
+            and isinstance(last.get("metadata"), dict)
+            and last["metadata"].get("node") == "final_answer"
+        )
+        if not is_final_bubble:
+            response_messages.append(
+                make_message("", title=FINAL_ANSWER_TITLE, node="final_answer")
+            )
+        response_messages[-1]["content"] += chunk.content
+
+    def chat(self, message, history):
+        """Generator that streams Gradio chat message dicts."""
+        if not self.rag_system.agent_graph:
+            yield "⚠️ System not initialized!"
+            return
+
+        config        = self.rag_system.get_config()
+        current_state = self.rag_system.agent_graph.get_state(config)
+        log_chat_start(message.strip(), self.rag_system.thread_id, bool(current_state.next))
+
+        try:
+            if current_state.next:
+                self.rag_system.agent_graph.update_state(config, {"messages": [HumanMessage(content=message.strip())]})
+                stream_input = None
+            else:
+                stream_input = {"messages": [HumanMessage(content=message.strip())]}
+
+            response_messages  = []
+            active_tool_calls  = {}
+            system_node_buffer = {}
+            last_yielded       = None
+
+            for chunk, metadata in self.rag_system.agent_graph.stream(stream_input, config=config, stream_mode="messages"):
+                node = metadata.get("langgraph_node", "")
+
+                if node in SYSTEM_NODES and isinstance(chunk, AIMessageChunk) and chunk.content:
+                    self._handle_system_node(chunk, node, response_messages, system_node_buffer)
+
+                elif hasattr(chunk, "tool_calls") and chunk.tool_calls:
+                    self._handle_tool_call(chunk, response_messages, active_tool_calls)
+
+                elif isinstance(chunk, ToolMessage):
+                    self._handle_tool_result(chunk, response_messages, active_tool_calls)
+
+                elif isinstance(chunk, AIMessageChunk) and chunk.content and node in FINAL_RESPONSE_NODES:
+                    self._handle_llm_token(chunk, node, response_messages)
+
+                else:
+                    continue
+
+                # Skip redundant pushes (e.g. empty reasoning tokens from the
+                # provider) so the stream carries only visible changes. This
+                # reduces load on unstable network links.
+                if response_messages != last_yielded:
+                    last_yielded = [dict(m) for m in response_messages]
+                    yield response_messages
+
+            final_state = self.rag_system.agent_graph.get_state(config)
+            log_chat_end(getattr(final_state, "values", final_state))
+
+            # Safety net: if the graph completed with a final assistant answer
+            # but token streaming never reached the UI (e.g. the stream was cut
+            # after the LLM finished, or the provider returned a non-streaming
+            # response), render it from the final state so the user always sees
+            # the aggregated answer.
+            final_values = getattr(final_state, "values", None) or {}
+            final_messages = final_values.get("messages", [])
+            if final_messages:
+                last_message = final_messages[-1]
+                if (
+                    isinstance(last_message, AIMessage)
+                    and str(getattr(last_message, "content", "") or "").strip()
+                    and not getattr(last_message, "tool_calls", None)
+                    and not getattr(last_message, "name", None)
+                ):
+                    already_rendered = any(
+                        m.get("role") == "assistant"
+                        and isinstance(m.get("metadata"), dict)
+                        and m["metadata"].get("node") == "final_answer"
+                        and str(m.get("content") or "").strip()
+                        for m in response_messages
+                    )
+                    if not already_rendered:
+                        response_messages.append(
+                            make_message(
+                                str(last_message.content),
+                                title=FINAL_ANSWER_TITLE,
+                                node="final_answer",
+                            )
+                        )
+                        yield response_messages
+
+        except Exception as e:
+            log_error("chat", e)
+            yield f"❌ Error: {type(e).__name__}: {str(e)}"
+
+    def clear_session(self):
+        self.rag_system.reset_thread()
+        self.rag_system.observability.flush()

@@ -1,0 +1,651 @@
+# Agentic RAG System Documentation
+
+An **Agentic Retrieval-Augmented Generation (RAG)** system built with **LangGraph**, featuring **parent–child chunking**, **hybrid dense + sparse retrieval**, and a local Ollama-first setup that can be adapted to other LLM providers.
+
+
+## Table of Contents
+
+[Quick Start](#quick-start) | [Architecture Overview](#architecture-overview) | [Project Structure](#project-structure) | [Configuration Guide](#configuration-guide) | [Common Customizations](#common-customizations) | [Observability](#observability) | [Advanced Topics](#advanced-topics) | [Troubleshooting](#troubleshooting)
+
+---
+
+## Quick Start
+
+### Installation
+
+Install all required dependencies with `pip`:
+
+```bash
+pip install -r requirements.txt
+```
+
+Or use `uv`:
+
+```bash
+uv venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+uv pip install -r requirements.txt
+```
+
+### Running the Application
+
+Start the Gradio interface locally:
+
+```bash
+python project/app.py
+```
+
+The application will be available at `http://localhost:7860` (default Gradio port).
+
+> This in-memory demo is intended for one local user. Deployments serving multiple users should assign a separate LangGraph thread ID per session.
+
+### Prerequisites
+
+- Python 3.11+
+- Ollama (local) or API keys for OpenAI, Anthropic, or Google
+
+---
+
+## Architecture Overview
+
+This system implements an advanced RAG pipeline with the following key features:
+
+- **Parent-Child Chunking**: Documents are split into small child chunks (for precise retrieval) linked to larger parent chunks (for rich context)
+- **Hybrid Search**: Combines dense embeddings and sparse (BM25) retrieval for optimal results
+- **LangGraph Agent**: Orchestrates query rewriting, retrieval, and response generation
+- **Compact Chat Memory**: Rewrites follow-ups using both a rolling summary and bounded recent conversation history
+- **Clarification Memory**: Preserves an unresolved query across human-in-the-loop pauses, combines its clarifications, then discards those temporary replies after the answer
+- **Provider Customization Path**: The runnable app uses Ollama by default, with documented examples for adapting it to OpenAI, Google Gemini, or Anthropic Claude
+- **Vector Storage**: Uses Qdrant for efficient similarity search
+
+### Data Flow
+
+```
+PDF → Markdown Conversion → Parent/Child Chunking → Vector Indexing → Agent Retrieval → LLM Response
+```
+
+---
+
+## Project Structure
+
+### Entry Point & Configuration
+
+| File | Purpose |
+|------|---------|
+| `project/app.py` | Application entry point, launches Gradio UI |
+| `project/config.py` | **Central configuration hub** - edit this for provider/model/chunking changes |
+| `project/utils.py` | PDF conversion and cached context-token estimation with an offline-safe fallback |
+| `project/document_chunker.py` | Parent/child splitting logic with cleaning and merging rules |
+| `project/Dockerfile` | Dockerfile with Ollama for local deployment |
+
+### Core System
+
+| File | Purpose |
+|------|---------|
+| `project/core/rag_system.py` | System bootstrap - creates managers and compiles LangGraph agent |
+| `project/core/document_manager.py` | Document ingestion pipeline (convert, chunk, index) |
+| `project/core/chat_interface.py` | Streams the aggregated answer while separating query analysis and tool activity from internal node output |
+| `project/core/observability.py` | Optional Langfuse tracing — callback handler lifecycle |
+
+### Database Layer
+
+| File | Purpose |
+|------|---------|
+| `project/db/vector_db_manager.py` | Qdrant client wrapper with embedding initialization |
+| `project/db/parent_store_manager.py` | File-backed storage for parent chunks |
+
+### RAG Agent (LangGraph)
+
+| File | Purpose |
+|------|---------|
+| `project/rag_agent/graph.py` | Graph builder and compilation logic |
+| `project/rag_agent/graph_state.py` | Shared and per-agent state, including rolling memory, pending clarification, and answer accumulation/reset logic |
+| `project/rag_agent/nodes.py` | Node implementations (summarize, rewrite, agent execution, aggregate) |
+| `project/rag_agent/edges.py` | Conditional edge routing logic (e.g., routing based on query clarity) |
+| `project/rag_agent/tools.py` | Retrieval tools (`search_child_chunks`, `retrieve_parent_chunks`) |
+| `project/rag_agent/prompts.py` | System prompts for agent behavior |
+| `project/rag_agent/schemas.py` | Structured output schemas (Pydantic models) |
+
+### User Interface
+
+| File | Purpose |
+|------|---------|
+| `project/ui/css.py` | Custom CSS styling for the Gradio interface |
+| `project/ui/gradio_app.py` | Gradio UI implementation with document upload and chat |
+
+---
+
+## Configuration Guide
+
+All primary settings are in `project/config.py`. Key parameters:
+
+### Directory Configuration
+
+```python
+MARKDOWN_DIR = "markdown_docs"        # Storage for converted PDF → Markdown files
+PARENT_STORE_PATH = "parent_store"    # File-backed storage for parent chunks
+QDRANT_DB_PATH = "qdrant_db"          # Local Qdrant vector database path
+```
+
+### Qdrant Configuration
+
+```python
+CHILD_COLLECTION = "document_child_chunks"  # Collection name for child chunks
+SPARSE_VECTOR_NAME = "sparse"               # Named sparse vector field (BM25)
+```
+
+### Model Configuration
+
+```python
+# Default: single model configuration
+DENSE_MODEL = "Qwen/Qwen3-Embedding-0.6B"
+SPARSE_MODEL = "Qdrant/bm25"
+LLM_MODEL = "granite4.1:8b"
+JUDGE_MODEL = "ministral-3:3b-instruct-2512-q8_0"
+LLM_TEMPERATURE = 0  # 0 = deterministic, 1 = creative
+LLM_SEED = 42
+```
+
+### Retrieval Configuration
+
+```python
+RETRIEVAL_SCORE_THRESHOLD = 0.4  # Lower = more recall, higher = more precision
+DEFAULT_RETRIEVAL_K = 7          # Default number of child chunks used by retrieval and evaluation
+CHILD_CHUNK_SEPARATOR = "\n\n<CHILD_CHUNK_BOUNDARY>\n\n"  # Keeps ranked child results separable for evaluation
+```
+
+### Agent Configuration
+```python
+# Hard limits to prevent infinite loops
+MAX_TOOL_CALLS = 8       # Maximum tool calls per agent run
+MAX_ITERATIONS = 10      # Maximum agent loop iterations
+GRAPH_RECURSION_LIMIT = 50 # Maximum number of steps before hitting a stop condition
+MAIN_HISTORY_MESSAGES_TO_KEEP = 4  # Raw messages retained after each answer; minimum 2
+
+# Context compression thresholds
+BASE_TOKEN_THRESHOLD = 2000     # Initial token threshold for compression
+TOKEN_GROWTH_FACTOR = 0.9       # Multiplier applied after each compression
+```
+
+### Terminal Execution Logging
+
+```python
+EXECUTION_LOGGING_ENABLED = False  # Print graph steps, state previews, tool calls, and outputs
+EXECUTION_LOG_MAX_CHARS = 1200     # Maximum characters shown for long values
+EXECUTION_LOG_USE_COLOR = True     # Use ANSI colors in the terminal
+```
+
+### Text Splitter Configuration
+
+```python
+CHILD_CHUNK_SIZE = 500              # Size of chunks used for retrieval
+CHILD_CHUNK_OVERLAP = 100           # Overlap between chunks (prevents context loss)
+MIN_PARENT_SIZE = 2000              # Target minimum; very short documents may remain smaller
+MAX_PARENT_SIZE = 4000             # Maximum parent chunk size
+
+# Markdown header splitting strategy
+HEADERS_TO_SPLIT_ON = [
+    ("#", "H1"),
+    ("##", "H2"),
+    ("###", "H3")
+]
+```
+
+### Langfuse Observability (Optional)
+
+```python
+import os
+
+LANGFUSE_ENABLED = os.environ.get("LANGFUSE_ENABLED", "false").lower() == "true"
+LANGFUSE_PUBLIC_KEY = ""               # From your Langfuse project settings
+LANGFUSE_SECRET_KEY = ""               # From your Langfuse project settings
+LANGFUSE_BASE_URL = "http://localhost:3000"  # Langfuse Cloud or self-hosted URL
+```
+
+---
+
+## Common Customizations
+
+### 1. Switching LLM Provider (Single Provider)
+
+> **Performance Note:** LLMs with 8B+ parameters typically offer superior reasoning, context comprehension, and response quality compared to smaller models. This applies to both proprietary and open-source models, as long as they **support native tool/function calling,** which is required for agentic RAG workflows.
+
+If you want to permanently switch from one provider to another (e.g., Ollama → Google Gemini), follow these steps:
+
+**Step 1:** Install the provider's SDK
+
+```bash
+pip install langchain-google-genai
+```
+
+**Step 2:** Set environment variable
+
+```bash
+export GOOGLE_API_KEY="your-google-key"
+```
+
+**Step 3:** Update `project/config.py`
+
+```python
+LLM_MODEL = "gemini-2.5-pro"
+LLM_TEMPERATURE = 0
+LLM_SEED = 42
+```
+
+**Step 4:** Modify `project/core/rag_system.py`
+
+Replace:
+
+```python
+llm = ChatOllama(model=config.LLM_MODEL, temperature=config.LLM_TEMPERATURE, seed=config.LLM_SEED)
+```
+
+With:
+
+```python
+from langchain_google_genai import ChatGoogleGenerativeAI
+
+llm = ChatGoogleGenerativeAI(model=config.LLM_MODEL, temperature=config.LLM_TEMPERATURE)
+```
+
+### 2. Optional Multi-Provider Configuration
+
+The repository ships with an Ollama-first implementation. Use this section if you want to extend `project/core/rag_system.py` into a provider factory.
+
+This approach allows you to maintain multiple provider configurations and switch between them easily.
+
+**Step 1:** Install required SDKs
+
+```bash
+pip install langchain-openai langchain-anthropic langchain-google-genai
+```
+
+**Step 2:** Set environment variables
+
+```bash
+export OPENAI_API_KEY="your-openai-key"
+export ANTHROPIC_API_KEY="your-anthropic-key"
+export GOOGLE_API_KEY="your-google-key"
+```
+
+**Step 3:** Update `project/config.py` with multi-provider configuration
+
+```python
+# --- Multi-Provider LLM Configuration ---
+LLM_CONFIGS = {
+    "ollama": {
+        "model": "granite4.1:8b",
+        "url":"http://localhost:11434",
+        "temperature": 0
+    },
+    "openai": {
+        "model": "gpt-5.2",
+        "temperature": 0
+    },
+    "anthropic": {
+        "model": "claude-sonnet-4-6",
+        "temperature": 0
+    },
+    "google": {
+        "model": "gemini-2.5-flash",
+        "temperature": 0
+    }
+}
+
+# Switch providers by changing this single line
+ACTIVE_LLM_CONFIG = "ollama"
+```
+
+**Step 4:** Modify `project/core/rag_system.py` in the `initialize()` method
+
+Replace the existing LLM initialization with:
+
+```python
+def initialize(self):
+    self.vector_db.create_collection(self.collection_name)
+    collection = self.vector_db.get_collection(self.collection_name)
+    
+    # Load active configuration
+    active_config = config.LLM_CONFIGS[config.ACTIVE_LLM_CONFIG]
+    model = active_config["model"]
+    temperature = active_config["temperature"]
+    
+    if config.ACTIVE_LLM_CONFIG == "ollama":
+        from langchain_ollama import ChatOllama
+        llm = ChatOllama(model=model, temperature=temperature, base_url=active_config["url"])
+        
+    elif config.ACTIVE_LLM_CONFIG == "openai":
+        from langchain_openai import ChatOpenAI
+        llm = ChatOpenAI(model=model, temperature=temperature)
+        
+    elif config.ACTIVE_LLM_CONFIG == "anthropic":
+        from langchain_anthropic import ChatAnthropic
+        llm = ChatAnthropic(model=model, temperature=temperature)
+        
+    elif config.ACTIVE_LLM_CONFIG == "google":
+        from langchain_google_genai import ChatGoogleGenerativeAI
+        llm = ChatGoogleGenerativeAI(model=model, temperature=temperature)
+        
+    else:
+        raise ValueError(f"Unsupported LLM provider: {config.ACTIVE_LLM_CONFIG}")
+    
+    # Continue with tool and graph initialization
+    tools = ToolFactory(collection).create_tools()
+    self.agent_graph = create_agent_graph(llm, tools)
+```
+
+**Switching Providers:** Simply change `ACTIVE_LLM_CONFIG` in `config.py`:
+
+```python
+ACTIVE_LLM_CONFIG = "google"  # Switch to Gemini Pro
+# ACTIVE_LLM_CONFIG = "anthropic"  # Or Claude Sonnet
+# ACTIVE_LLM_CONFIG = "openai"  # Or GPT-4o
+```
+
+---
+
+**Provider Reference Table:**
+
+| Provider | Environment Variable | Import Statement | Example Models |
+|----------|---------------------|------------------|----------------|
+| OpenAI | `OPENAI_API_KEY` | `from langchain_openai import ChatOpenAI` | `gpt-5.2`, `gpt-5-mini` |
+| Anthropic | `ANTHROPIC_API_KEY` | `from langchain_anthropic import ChatAnthropic` | `claude-opus-4-6`, `claude-sonnet-4-6` |
+| Google | `GOOGLE_API_KEY` | `from langchain_google_genai import ChatGoogleGenerativeAI` | `gemini-2.5-pro`, `gemini-2.5-flash` |
+| Ollama | None (local) | `from langchain_ollama import ChatOllama` | `granite4.1:8b`, `llama3.1:8b-instruct-q6_K` |
+
+---
+
+### 3. Changing Embedding Models
+
+**Why change?** Trade-offs between speed, cost, and quality.
+
+**Step 1:** Update `project/config.py`
+
+```python
+# Example: Faster, smaller model
+DENSE_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+
+# Example: Alternative Sentence Transformers model
+# DENSE_MODEL = "sentence-transformers/all-mpnet-base-v2"
+
+# Example: Gemma embeddings (Google's open model)
+# DENSE_MODEL = "google/embeddinggemma-300m"
+
+# Default: Qwen embeddings (Alibaba's multilingual model)
+# DENSE_MODEL = "Qwen/Qwen3-Embedding-0.6B"
+
+SPARSE_MODEL = "Qdrant/bm25"  # Usually no need to change
+```
+
+**Step 2:** Re-index your documents
+
+⚠️ **Important:** Changing embeddings requires re-indexing. In the educational UI, use **Clear All**, restart if the old collection prevents startup, then upload the documents again.
+
+**Implementation Details** (in `project/db/vector_db_manager.py`):
+
+```python
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_qdrant import FastEmbedSparse
+import config
+
+self.__dense_embeddings = HuggingFaceEmbeddings(model_name=config.DENSE_MODEL)
+self.__sparse_embeddings = FastEmbedSparse(model_name=config.SPARSE_MODEL)
+```
+
+**Popular Embedding Models:**
+
+| Model | Context Size | Vector Dimension | Speed | Quality | Use Case |
+|-------|--------------|------------------|-------|---------|----------|
+| all-MiniLM-L6-v2 | 256 tokens | 384 | Fast | Good | General purpose, quick semantic similarity |
+| all-mpnet-base-v2 | 512 tokens | 768 | Medium | Excellent | High-accuracy semantic search |
+| bge-large-en-v1.5 | 512 tokens | 1024 | Slow | Best | Production-grade retrieval on GPU |
+| google/embeddinggemma-300m | 2048 tokens | 768 | Fast | Very Good | Lightweight, efficient multilingual retrieval |
+| Qwen/Qwen3-Embedding-0.6B | 32768 tokens | 1024 | Medium | Excellent | Default multilingual/code retrieval model |
+| Qwen/Qwen3-Embedding-8B | 32768 tokens | 4096 | Very Slow | Excellent / SOTA | Heavy GPU-oriented retrieval experiments |
+
+---
+
+### 4. Adjusting Chunking Strategy
+
+**Why adjust?** Balance between retrieval precision and context richness.
+
+> **Validation tool:** Use 🐿️ [**Chunky**](https://github.com/GiovanniPasq/chunky) to clean Markdown, inspect chunks, compare chunking strategies, and enrich metadata before re-indexing.
+
+**Step 1:** Update chunk sizes in `project/config.py`
+
+```python
+# For short, factual queries (e.g., technical documentation)
+CHILD_CHUNK_SIZE = 300
+CHILD_CHUNK_OVERLAP = 60
+MIN_PARENT_SIZE = 1500
+MAX_PARENT_SIZE = 8000
+
+# For narrative or contextual queries (e.g., legal documents)
+# CHILD_CHUNK_SIZE = 800
+# CHILD_CHUNK_OVERLAP = 150
+# MIN_PARENT_SIZE = 3000
+# MAX_PARENT_SIZE = 15000
+```
+
+**Step 2 (Optional):** Replace the splitter in `project/document_chunker.py`
+
+**Default (Character-based):**
+```python
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+
+self.__child_splitter = RecursiveCharacterTextSplitter(
+    chunk_size=config.CHILD_CHUNK_SIZE,
+    chunk_overlap=config.CHILD_CHUNK_OVERLAP
+)
+```
+
+**Alternative (Sentence-aware):**
+```python
+from langchain_text_splitters import SentenceTransformersTokenTextSplitter
+
+self.__child_splitter = SentenceTransformersTokenTextSplitter(
+    chunk_size=config.CHILD_CHUNK_SIZE,
+    chunk_overlap=config.CHILD_CHUNK_OVERLAP
+)
+```
+
+**Step 3:** Re-run ingestion
+
+Use **Clear All** in the Gradio interface, then upload the documents again. Existing documents are intentionally skipped to avoid accidental duplicates.
+
+**Chunking Guidelines:**
+
+> ⚠️ **Disclaimer:** These are empirical guidelines. Optimal sizes depend on:
+> - **Child chunk** → embedding model's context window (e.g. 256 tokens for all-MiniLM-L6-v2, 512 for bge-large-en-v1.5): child size should not exceed it
+> - **Parent chunk** → generative model's context window (e.g. 8K, 32K, 128K tokens): parent must fit within the context sent to the LLM alongside the query
+>
+> Always validate values empirically on your own corpus.
+
+The chunker enforces `MAX_PARENT_SIZE`, deduplicates merged header metadata, and rebalances small neighboring chunks when possible. A document shorter than `MIN_PARENT_SIZE` remains a single smaller chunk.
+
+| Document Type | Child Size | Parent Size | Reasoning |
+|---------------|-----------|-------------|-----------|
+| Technical Docs | 300-500 | 2000-4000 | Precise lookups, code snippets |
+| Legal Contracts | 600-1000 | 5000-15000 | Context-heavy, definitions |
+| Research Papers | 400-600 | 3000-8000 | Balance of precision and context |
+| FAQs / Knowledge Base | 200-400 | 1500-4000 | Short, focused answers |
+
+---
+
+### 5. Agent Configuration
+
+Tune agent behavior in `project/config.py`:
+```python
+# Hard limits to prevent infinite loops
+MAX_TOOL_CALLS = 8       # Maximum tool calls per agent run
+MAX_ITERATIONS = 10      # Maximum agent loop iterations
+GRAPH_RECURSION_LIMIT = 50 # Maximum number of steps before hitting a stop condition
+MAIN_HISTORY_MESSAGES_TO_KEEP = 4  # Raw messages retained after each answer; minimum 2
+
+# Context compression thresholds
+BASE_TOKEN_THRESHOLD = 2000     # Initial token threshold for compression
+TOKEN_GROWTH_FACTOR = 0.9       # Multiplier applied after each compression
+```
+
+| Parameter | Effect |
+|-----------|--------|
+| `MAX_TOOL_CALLS` | Maximum cumulative tool calls requested; a request that would exceed it is not executed |
+| `MAX_ITERATIONS` | Maximum LLM reasoning iterations; a final answer at the boundary is still accepted |
+| `GRAPH_RECURSION_LIMIT` | Increase for complex [graphs](https://docs.langchain.com/oss/python/langgraph/errors/GRAPH_RECURSION_LIMIT) |
+| `BASE_TOKEN_THRESHOLD` | Delay compression by increasing this value |
+| `TOKEN_GROWTH_FACTOR` | Lower values compress more aggressively |
+
+---
+
+## Observability
+
+Optional tracing with [Langfuse](https://langfuse.com) captures every LLM call, tool invocation, and graph transition. It is useful for debugging agent behavior, tracking costs, and evaluating retrieval quality.
+
+### Enabling Langfuse
+
+1. Sign up on [Langfuse Cloud](https://cloud.langfuse.com/), create an organization, then create a project and generate API keys from the project settings.
+2. Set environment variables (or copy `.env.example` to `.env`):
+
+```bash
+export LANGFUSE_ENABLED=true
+export LANGFUSE_PUBLIC_KEY=pk-lf-...
+export LANGFUSE_SECRET_KEY=sk-lf-...
+export LANGFUSE_BASE_URL=https://cloud.langfuse.com   # or your self-hosted URL
+```
+
+3. Run the app normally. Traces appear in your [Langfuse dashboard](https://cloud.langfuse.com/).
+
+To disable tracing, set `LANGFUSE_ENABLED=false` or leave the variables unset. The application runs identically either way.
+
+For additional details on integrating Langfuse with LangChain or LangGraph, see the official [documentation](https://docs.langchain.com/oss/python/integrations/providers/langfuse).
+
+### What gets traced
+
+| Component | Traced operations |
+|-----------|-------------------|
+| Graph nodes | `summarize_history`, `rewrite_query`, `orchestrator`, `compress_context`, `fallback_response`, `aggregate_answers` |
+| Tools | `search_child_chunks`, `retrieve_parent_chunks` (arguments + results) |
+| Structured output | `QueryAnalysis` parsing in the rewrite step |
+| Subgraph fan-out | Parallel agent invocations via `Send()` |
+
+### Hosting options
+
+- **Langfuse Cloud** — sign up at [cloud.langfuse.com](https://cloud.langfuse.com) and check the current plan limits there.
+- **Self-hosted** — MIT-licensed, deploy with Docker Compose. See the [official self-hosting docs](https://langfuse.com/self-hosting).
+
+For a conceptual tracing guide and platform context, see [`notebooks/observability.ipynb`](../notebooks/observability.ipynb).
+
+---
+
+## Advanced Topics
+
+### Customizing the RAG Agent
+
+**Location:** `project/rag_agent/`
+
+**Add/Remove Nodes:** Edit `graph.py` and `nodes.py`
+
+Example: Adding a fact-checking node
+```python
+# In nodes.py
+def fact_check_node(state):
+    # Your fact-checking logic
+    return {"fact_checked": True}
+
+# In graph.py
+builder.add_node("fact_check", fact_check_node)
+builder.add_edge("retrieve", "fact_check")
+```
+
+**Modify Conditional Routing:** Edit `edges.py` to change graph flow logic
+
+Example from the system - routing based on query clarity:
+```python
+def route_after_rewrite(state: State) -> Literal["request_clarification", "agent"]:
+    """Routes to human input if question unclear, otherwise processes all rewritten queries"""
+    if not state.get("questionIsClear", False):
+        return "request_clarification"
+    else:
+        # Fan-out: send each rewritten question to parallel processing
+        return [
+            Send("agent", {"question": query, "question_index": idx, "messages": []})
+            for idx, query in enumerate(state["rewrittenQuestions"])
+        ]
+```
+
+This pattern allows the agent to either request clarification from the user or fan-out multiple query variations for parallel retrieval.
+
+**Modify Prompts:** Edit `prompts.py` to change agent behavior and response style
+
+**Add Custom Tools:** Extend `tools.py` with new retrieval strategies or external integrations
+
+### Replacing Storage Backends
+
+**Vector Database:**
+- Default: Local Qdrant
+- Alternatives: Remote Qdrant Cloud, Pinecone, Weaviate
+- Edit: `project/db/vector_db_manager.py`
+
+**Parent Store:**
+- Default: JSON file
+- Alternatives: PostgreSQL, MongoDB, S3
+- Edit: `project/db/parent_store_manager.py`
+
+### Extending the UI
+
+**Location:** `project/ui/gradio_app.py`
+
+Add runtime settings, admin panels, or analytics:
+```python
+with gr.Accordion("Advanced Settings", open=False):
+    provider_dropdown = gr.Dropdown(
+        choices=["openai", "anthropic", "google", "ollama"],
+        label="LLM Provider"
+    )
+```
+
+### Docker Deployment
+
+> ⚠️ **System Requirements**: At least 8GB of RAM allocated to Docker; 12GB is recommended when indexing with Qwen embeddings and running the default Ollama model locally. Exact memory use depends on the Ollama model build and quantization.
+
+#### Build and Run
+```bash
+# Build image
+docker build -t agentic-rag -f project/Dockerfile .
+
+# Run container
+docker run --name rag-assistant -p 7860:7860 agentic-rag
+```
+
+**Optional: GPU acceleration** (NVIDIA only):
+```bash
+docker run --gpus all --name rag-assistant -p 7860:7860 agentic-rag
+```
+
+**Common commands:**
+```bash
+docker stop rag-assistant      # Stop
+docker start rag-assistant     # Restart
+docker logs -f rag-assistant   # View logs
+docker rm -f rag-assistant     # Remove
+```
+
+> ⚠️ **Performance Note**: On Windows/Mac, Docker runs via a Linux VM which may slow down I/O operations like document indexing. LLM inference speed is largely unaffected. On Linux, performance is comparable to running locally.
+
+Once running, open `http://localhost:7860`.
+
+---
+
+## Troubleshooting
+
+| Issue | Cause | Solution |
+|-------|-------|----------|
+| "Model not found" error | Incorrect model name for provider | Verify `LLM_MODEL` matches provider's API (e.g., `gpt-4o-mini` not `gpt4-mini`) |
+| Low-quality retrieval results | Poor embedding model or chunk configuration | Re-index with better embeddings or adjust chunk sizes |
+| Vector size mismatch | Existing Qdrant collection was built with a different embedding model | Clear the collection and re-index documents after changing `DENSE_MODEL` |
+| Slow response times | Large embedding model or high `top_k` value | Use smaller embedding models (e.g., all-MiniLM-L6-v2) or reduce `top_k` in retrieval tools |
+| API rate limits exceeded | Too many requests to external provider | Add retry logic with exponential backoff or switch to local Ollama models |
+| Out of memory errors | Large document set or embedding model | Use smaller embeddings, reduce batch size, or enable GPU acceleration |
+| Empty retrieval results | Collection not indexed or wrong collection name | Verify documents are uploaded and `CHILD_COLLECTION` name matches in config |
+| Import errors after provider switch | Missing SDK installation | Install required package: `pip install langchain-{provider}` |
+| Inconsistent answers across runs | High temperature setting | Set `LLM_TEMPERATURE = 0` in config for deterministic responses |

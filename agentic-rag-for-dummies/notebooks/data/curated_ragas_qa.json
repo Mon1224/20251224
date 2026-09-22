@@ -1,0 +1,333 @@
+[
+  {
+    "source": "javascript_tutorial.pdf",
+    "markdown_file": "javascript_tutorial.md",
+    "question": "What does client-side JavaScript let a web page do, and how can it validate a form before submission?",
+    "reference": "Client-side JavaScript lets an HTML page include programs that interact with the user, control the browser, and dynamically create HTML content instead of remaining static. In the form example, JavaScript can check whether the user entered a valid email address before submission. The code runs when the user submits the form, and only valid entries are sent to the web server.",
+    "context_phrases": [
+      "can include programs that interact with the user",
+      "check if the user has entered a valid e-mail address",
+      "only if all the entries are valid"
+    ]
+  },
+  {
+    "source": "javascript_tutorial.pdf",
+    "markdown_file": "javascript_tutorial.md",
+    "question": "According to the tutorial, what are the main advantages of using JavaScript on a web page?",
+    "reference": "The tutorial lists four main advantages: less server interaction, immediate feedback to visitors, increased interactivity, and richer interfaces. Less server interaction comes from validating input before sending a page to the server, reducing server traffic and load. Immediate feedback avoids waiting for a page reload, while interactivity and richer interfaces include reactions to mouse or keyboard actions, drag-and-drop components, and sliders.",
+    "context_phrases": [
+      "Less server interaction",
+      "Immediate feedback to the visitors",
+      "Richer interfaces"
+    ]
+  },
+  {
+    "source": "javascript_tutorial.pdf",
+    "markdown_file": "javascript_tutorial.md",
+    "question": "Which limitations prevent client-side JavaScript from being treated as a full-fledged programming language in this tutorial?",
+    "reference": "The tutorial says client-side JavaScript cannot be treated as a full-fledged programming language because it lacks several important features. It does not allow reading or writing files for security reasons, cannot be used for networking applications because there is no support available, and does not have multithreading or multiprocessor capabilities.",
+    "context_phrases": [
+      "full-fledged programming language",
+      "does not allow the reading or writing of files",
+      "doesn't have any multithreading"
+    ]
+  },
+  {
+    "source": "javascript_tutorial.pdf",
+    "markdown_file": "javascript_tutorial.md",
+    "question": "Why does the tutorial say JavaScript does not require expensive development tools?",
+    "reference": "JavaScript does not require expensive development tools because a beginner can start with a simple text editor such as Notepad. Since JavaScript is interpreted inside the context of a web browser, the user does not need to buy a compiler. The tutorial also mentions optional editors such as Microsoft FrontPage, Macromedia Dreamweaver MX, and Macromedia HomeSite 5.",
+    "context_phrases": [
+      "does not require expensive development tools",
+      "simple text editor such as Notepad",
+      "don't even need to buy a compiler"
+    ]
+  },
+  {
+    "source": "javascript_tutorial.pdf",
+    "markdown_file": "javascript_tutorial.md",
+    "question": "How does the tutorial describe the relationship between ECMA-262, JavaScript, and JScript?",
+    "reference": "The tutorial says the ECMA 262 Specification defined a standard version of the core JavaScript language. It also says Netscape's JavaScript and Microsoft's JScript conform to the ECMAScript standard, although both languages still support features that are not part of the standard. This frames ECMA-262 as the shared standard behind those implementations.",
+    "context_phrases": [
+      "The ECMA 262 Specification defined",
+      "Netscape's JavaScript and Microsoft's JScript conform",
+      "not a part of the standard"
+    ]
+  },
+  {
+    "source": "javascript_tutorial.pdf",
+    "markdown_file": "javascript_tutorial.md",
+    "question": "Where can JavaScript statements be placed in an HTML page, and which script attribute is recommended?",
+    "reference": "JavaScript statements are placed within <script>...</script> tags in a web page. The tutorial says script tags can be placed anywhere, but it normally recommends keeping them within the <head> tags. It also says the language attribute has been phased out in recent HTML and XHTML, while the type attribute is recommended and should be set to \"text/javascript\".",
+    "context_phrases": [
+      "placed within the **<script>... </script>** HTML tags",
+      "normally recommended that you should keep it within the **<head>** tags",
+      "value should be set to \"text/javascript\""
+    ]
+  },
+  {
+    "source": "javascript_tutorial.pdf",
+    "markdown_file": "javascript_tutorial.md",
+    "question": "How does the tutorial use HTML comments around a JavaScript example, and why is the closing sequence written carefully?",
+    "reference": "The tutorial wraps a sample JavaScript block with an optional HTML comment so browsers that do not support JavaScript do not read the script code. The comment ends with //--> because // marks a JavaScript comment, preventing the browser from treating the HTML comment close as JavaScript code. The tutorial later notes that JavaScript recognizes <!-- as a single-line comment, but the HTML closing sequence --> is not recognized and should be written as //-->.",
+    "context_phrases": [
+      "optional HTML comment that surrounds our JavaScript code",
+      "The comment ends with a \"//-->\"",
+      "should be written as //-->"
+    ]
+  },
+  {
+    "source": "javascript_tutorial.pdf",
+    "markdown_file": "javascript_tutorial.md",
+    "question": "What does the tutorial say about whitespace, line breaks, and semicolons in JavaScript?",
+    "reference": "JavaScript ignores spaces, tabs, and newlines, so programmers can use them to format and indent code clearly. Simple JavaScript statements are generally followed by semicolons, but semicolons can be omitted when each statement is on a separate line. If statements are formatted on a single line, semicolons must be used, and the tutorial notes that using semicolons is good programming practice.",
+    "context_phrases": [
+      "JavaScript ignores spaces, tabs, and newlines",
+      "allows you to omit this semicolon",
+      "you must use semicolons"
+    ]
+  },
+  {
+    "source": "javascript_tutorial.pdf",
+    "markdown_file": "javascript_tutorial.md",
+    "question": "What naming rules does the tutorial give for JavaScript variables?",
+    "reference": "The tutorial says JavaScript variable names must not use reserved keywords such as break or boolean. Variable names should not start with a numeral; they must begin with a letter or an underscore. It also emphasizes that JavaScript variable names are case-sensitive, so Name and name are different variables.",
+    "context_phrases": [
+      "should not use any of the JavaScript reserved keywords",
+      "should not start with a numeral",
+      "JavaScript variable names are case-sensitive"
+    ]
+  },
+  {
+    "source": "javascript_tutorial.pdf",
+    "markdown_file": "javascript_tutorial.md",
+    "question": "What do the JavaScript logical operators &&, ||, and ! do in the tutorial's explanation?",
+    "reference": "The tutorial says && is Logical AND: if both operands are non-zero, the condition becomes true. It says || is Logical OR: if either operand is non-zero, the condition becomes true. It says ! is Logical NOT: it reverses the logical state of its operand, so a true condition becomes false.",
+    "context_phrases": [
+      "&& (Logical AND)",
+      "|| (Logical OR)",
+      "! (Logical NOT)"
+    ]
+  },
+  {
+    "source": "blockchain.pdf",
+    "markdown_file": "blockchain.md",
+    "question": "How does the guide define blockchain and the kind of record it keeps?",
+    "reference": "The guide defines blockchain as a tamper-proof, shared digital ledger that records transactions in a decentralized peer-to-peer network. It permanently stores the history of asset exchanges between participants in the network. In the introduction, it also describes blockchain as a shared, immutable ledger used to record transaction history and track tangible assets such as houses, cars, cash, or land, as well as intangible assets such as intellectual property, patents, copyrights, and branding.",
+    "context_phrases": [
+      "tamper-proof, shared digital ledger",
+      "permanently stores the history of asset exchanges",
+      "An asset can be tangible"
+    ]
+  },
+  {
+    "source": "blockchain.pdf",
+    "markdown_file": "blockchain.md",
+    "question": "What risks of centralized record-keeping does blockchain try to address?",
+    "reference": "The guide says centralized record-keeping gives a single entity, such as a bank or land registry, control over transaction records and data. This creates concerns about trustworthiness because of corruption, hacking, and business failures. Central record-keepers also act as gatekeepers, deciding who can access and transact in the system, while decentralized systems reduce gatekeepers and single points of failure.",
+    "context_phrases": [
+      "single entity, such as a bank or land registry",
+      "corruption, hacking, and business failures",
+      "eliminate the need for gatekeepers"
+    ]
+  },
+  {
+    "source": "blockchain.pdf",
+    "markdown_file": "blockchain.md",
+    "question": "Which pre-Bitcoin developments does the guide identify in blockchain's historical background?",
+    "reference": "The guide traces blockchain's roots to early-1990s work by Stuart Haber and W. Scott Stornetta, who developed a prototype for securely timestamping digital documents to prevent backdating or alteration. It also mentions Nick Szabo's 1998 concept of bit gold, a decentralized digital currency that was never realized but foreshadowed Bitcoin's structure. Bitcoin then became blockchain's first significant application in 2009.",
+    "context_phrases": [
+      "Stuart Haber and W. Scott Stornetta",
+      "securely timestamp digital documents",
+      "Nick Szabo conceptualized 'bit gold'"
+    ]
+  },
+  {
+    "source": "blockchain.pdf",
+    "markdown_file": "blockchain.md",
+    "question": "What double-spending problem did Bitcoin solve according to the guide?",
+    "reference": "The guide says Bitcoin was groundbreaking because it was the first technology to prevent double spending in a digital currency without relying on a central authority. It achieved this through a transparent and immutable ledger system. This made a decentralized peer-to-peer currency possible without a central record keeper validating each transaction.",
+    "context_phrases": [
+      "first technology to prevent the issue of double spending",
+      "without relying on any central authority",
+      "transparent and immutable ledger system"
+    ]
+  },
+  {
+    "source": "blockchain.pdf",
+    "markdown_file": "blockchain.md",
+    "question": "What roles do digital signatures and hash functions play in blockchain cryptography?",
+    "reference": "Digital signatures provide security and authenticity by letting a user sign a transaction with a private key, while others verify it with the sender's public key. Hash functions help maintain blockchain integrity and order by creating a fixed-size digital fingerprint of data; even a small input change changes the hash drastically. Each block contains the hash of the previous block, which creates a secure link between blocks.",
+    "context_phrases": [
+      "Digital Signatures:",
+      "sign it with their private key",
+      "Each block in the blockchain contains the hash of the previous block"
+    ]
+  },
+  {
+    "source": "blockchain.pdf",
+    "markdown_file": "blockchain.md",
+    "question": "How do proof of work, proof of stake, delegated proof of stake, and proof of authority differ in the guide?",
+    "reference": "Proof of Work is used by Bitcoin and has miners solve complex mathematical puzzles to validate transactions and create new blocks; it is very secure but energy intensive. Proof of Stake chooses validators based on cryptocurrency they stake and other factors, making it more energy efficient than PoW. Delegated Proof of Stake has stakeholders vote for delegates to manage the blockchain, while Proof of Authority relies on approved validator accounts and is faster and more energy-efficient but less decentralized.",
+    "context_phrases": [
+      "Proof of Work (PoW):",
+      "Proof of Stake (PoS):",
+      "Delegated Proof of Stake (dPoS):",
+      "Proof of Authority (PoA):"
+    ]
+  },
+  {
+    "source": "blockchain.pdf",
+    "markdown_file": "blockchain.md",
+    "question": "When does the guide say blockchain is a better option than a traditional database?",
+    "reference": "The guide says blockchain is better when an application needs immutable and tamper-proof records, decentralization and trustlessness, transparency and auditability, smart contracts, cryptographic security, cross-organizational trust, cryptocurrency or token management, or consensus among multiple parties. It also warns that traditional databases may be more suitable for high-speed processing, low latency, or applications that do not need blockchain features. In some cases, a hybrid approach may combine strengths from both technologies.",
+    "context_phrases": [
+      "Blockchain would be a better option",
+      "Immutable and tamper-proof records",
+      "Traditional databases may be more suitable"
+    ]
+  },
+  {
+    "source": "blockchain.pdf",
+    "markdown_file": "blockchain.md",
+    "question": "How does the guide distinguish permissionless blockchains from permissioned blockchains?",
+    "reference": "Permissionless blockchains have no gatekeepers, make transactions public, and let anyone create an address and interact with the network. Participants can join or exit, validate transactions, mine, and maintain a full copy of the blockchain, with trust placed in the protocol rather than an operator. Permissioned blockchains restrict participation to identifiable approved participants, often providing more privacy and control, and limiting who can operate nodes, validate transactions, access data, influence segments of the blockchain, or modify the protocol.",
+    "context_phrases": [
+      "In _permissionless blockchains_",
+      "there are no gatekeepers",
+      "In _permissioned blockchains_ not anyone can join"
+    ]
+  },
+  {
+    "source": "blockchain.pdf",
+    "markdown_file": "blockchain.md",
+    "question": "How can blockchain improve supply chain management according to the guide?",
+    "reference": "The guide says blockchain enhances transparency, traceability, and security across the supply chain by creating a tamper-proof, immutable ledger of transactions or events. This enables end-to-end visibility, tracking of origin, production, and movement of products, and verification of authenticity through unique digital identifiers such as serial numbers or QR codes. It can also support smart contracts for payment, quality control, and delivery, reduce intermediaries and counterfeiting, optimize inventory, record product quality, track sustainability impact, and manage supplier credentials.",
+    "context_phrases": [
+      "enhancing transparency, traceability, and security",
+      "end-to-end visibility",
+      "unique digital identifiers"
+    ]
+  },
+  {
+    "source": "blockchain.pdf",
+    "markdown_file": "blockchain.md",
+    "question": "What is DeFi, and how does the guide contrast it with traditional finance?",
+    "reference": "The guide says Traditional Finance, or TradFi, uses centralized institutions as intermediaries and is characterized by custody of assets by CeFi entities and permissioned participation requiring verified identity. DeFi operates through decentralized, open, peer-to-peer models using smart contracts on blockchains, bypassing traditional intermediaries. It can support lending, borrowing, and asset trading in a P2P manner, and it is described as open, permissionless, censorship resistant, publicly verifiable, immutable, and not geographically constrained, while still carrying technology, project, economic, governance, and regulatory risks.",
+    "context_phrases": [
+      "Traditional Finance, or TradFi",
+      "Operating on decentralized, open, and peer-to-peer models",
+      "open, permissionless, and resistant to censorship"
+    ]
+  },
+  {
+    "source": "fortinet.pdf",
+    "markdown_file": "fortinet.md",
+    "question": "What is the Fortinet TOE type, and what components are included for physical versus virtual FortiGate models?",
+    "reference": "The TOE type is Boundary Protection Device. The FortiGate Series or FortiGate Family of Next Generation Firewalls are identified by product name, firmware build number, and hardware version. For physical models, the TOE consists of hardware and FortiOS firmware, while Virtual Machine models consist only of FortiOS.",
+    "context_phrases": [
+      "TOE Type:",
+      "Boundary Protection Device",
+      "Virtual Machine (VM) models consist only of the FortiOS"
+    ]
+  },
+  {
+    "source": "fortinet.pdf",
+    "markdown_file": "fortinet.md",
+    "question": "Which FortiOS firmware build applies to all evaluated FortiGate models?",
+    "reference": "The evaluated firmware build for all FortiGate models is FortiOS 5.2.7 build number b718. The target of evaluation is identified as FortiGate Next Generation Firewalls and FortiOS 5.2.7 CC Compliant Firmware. The document also states that all models share a common software platform.",
+    "context_phrases": [
+      "FortiOS 5.2.7 build number b718",
+      "FortiOS 5.2.7 CC Compliant Firmware",
+      "All models share a common software platform"
+    ]
+  },
+  {
+    "source": "fortinet.pdf",
+    "markdown_file": "fortinet.md",
+    "question": "Which FortiGate security functions are inside the evaluation scope, and which traffic-control features are excluded?",
+    "reference": "The evaluation scope includes FortiGate firewall, web filtering, VPN, antivirus, and intrusion detection/prevention security functionality. The document explicitly excludes antispam, content filtering, and traffic shaping from the evaluation. Although FortiGate can provide many network-level services, the answer should distinguish evaluated security functionality from features outside the evaluated configuration.",
+    "context_phrases": [
+      "within the scope of this evaluation",
+      "firewall, web filtering, VPN, antivirus",
+      "antispam, content filtering and traffic shaping features are not included"
+    ]
+  },
+  {
+    "source": "fortinet.pdf",
+    "markdown_file": "fortinet.md",
+    "question": "How can authorized administrators access a FortiGate unit locally and remotely?",
+    "reference": "Authorized administrators can use a dedicated console port for local administration. The console port uses RS232 with either a DB-9 or RJ-45 connector, and a VT100 terminal can access the CLI to configure the unit, monitor operation, and examine audit logs. Remote administration can be performed through a configured network port that allows HTTPS for the Network Web-Based GUI, which also lets an authorized administrator configure the FortiGate unit, monitor it, and examine audit logs.",
+    "context_phrases": [
+      "A dedicated console port is available on all models",
+      "Remote administration may be performed",
+      "allow HTTPS for the Network Web-Based GUI"
+    ]
+  },
+  {
+    "source": "fortinet.pdf",
+    "markdown_file": "fortinet.md",
+    "question": "How does the Fortinet TOE support random number generation in FIPS-CC mode?",
+    "reference": "The TOE uses a firmware-based deterministic random bit generator, or DRBG, that conforms to NIST Special Publication 800-90A. The Fortinet entropy token seeds the DRBG during the boot process and periodically reseeds it; the default reseed period is once every 24 hours, or 1440 minutes. The token uses a wide-band Gaussian white noise generator as an entropy source, connects through a standard USB interface, must be installed to complete boot and reseeding, and loads a minimum of 256 bits of entropy.",
+    "context_phrases": [
+      "deterministic random bit generator (DRBG)",
+      "NIST Special Publication 800-90A",
+      "minimum of 256 bits of entropy"
+    ]
+  },
+  {
+    "source": "fortinet.pdf",
+    "markdown_file": "fortinet.md",
+    "question": "What audit records does the Fortinet TOE create, and who can read them?",
+    "reference": "The TOE creates audit records for administrative events, potential policy violations, and information flow decisions. It records the identity of the administrator or user that caused the event and applies timestamps as auditable events occur. Administrators can review audit records, but log-reading is provided by default only to the primary administrator account and must be specifically granted to any other administrator account.",
+    "context_phrases": [
+      "administrative events, potential policy violations and information flow decisions",
+      "records the identity of the administrator or user",
+      "must be specifically granted"
+    ]
+  },
+  {
+    "source": "fortinet.pdf",
+    "markdown_file": "fortinet.md",
+    "question": "Which information-flow security policies does the TOE enforce, and what are their default behaviors?",
+    "reference": "The TOE enforces four information-flow security functional policies: Unauthenticated Information Flow, Authenticated Information Flow, VPN, and Web Filtering. The Unauthenticated, Authenticated, and VPN SFP rules have restrictive default values, so by default no information is allowed to flow and TOE services are unavailable to unauthenticated users. The Web Filtering SFP has permissive defaults and does not block URLs until they are specifically identified.",
+    "context_phrases": [
+      "four information flow security functional policies",
+      "restrictive default values",
+      "Web Filtering SFP has permissive default values"
+    ]
+  },
+  {
+    "source": "fortinet.pdf",
+    "markdown_file": "fortinet.md",
+    "question": "What processing steps does the FortiGate TOE follow before forwarding incoming traffic?",
+    "reference": "The first processing step is local IPS anomaly protection at the kernel level, inspecting incoming information for anomalies targeting the TOE such as SYN floods, ping of death, source routing, and port scans. If not blocked, traffic is processed by firewall flow-control policy, where the first matched policy must explicitly allow the traffic. If authentication is configured, successful authentication is required, and then enabled Protection Profile services such as scheduling, SMTP commands, MIME types, FTP subcommands, HTTP methods, FortiGuard Web Filter, virus protection, and IPS signature matching may apply; traffic only passes to the next method when previous methods explicitly allow it.",
+    "context_phrases": [
+      "The very first processing step",
+      "syn floods, ping of death, source routing and port scans",
+      "traffic is only passed to the next enforcement method"
+    ]
+  },
+  {
+    "source": "fortinet.pdf",
+    "markdown_file": "fortinet.md",
+    "question": "How does the TOE authenticate administrators, users, and VPN peers?",
+    "reference": "The TOE requires identification and authentication for all administrative access and for network user access to specific services. It always enforces identification and authentication on the serial interface; on network interfaces it enforces them for administrator access, specific services, and VPN users. Local administrators use username and password, remote administration and user access to Telnet and FTP require a FortiToken one-time password generator, proxy users and administrators must authenticate after a configurable system screen, and VPN peers authenticate with preshared keys or certificates for IPsec VPNs and certificates for SSL VPNs.",
+    "context_phrases": [
+      "requires identification and authentication",
+      "FortiToken one-time password generator",
+      "VPN peers authenticate using preshared keys or certificates"
+    ]
+  },
+  {
+    "source": "fortinet.pdf",
+    "markdown_file": "fortinet.md",
+    "question": "Which trusted paths and channels protect remote administration and HA cluster communication?",
+    "reference": "The TOE uses trusted paths for remote administrator authentication and actions, proxy user authentication, VPN user authentication, and VPN user actions. Remote Network Web-Based GUI administration uses HTTPS, with TLS 1.1 and TLS 1.2 used to encrypt and authenticate sessions between the remote browser and TOE; HTTPS is disabled by default and must be explicitly enabled. HA cluster communication uses trusted channels with HA heartbeat encryption and authentication, which protect cluster passwords and configuration changes, prevent false heartbeat messages, are disabled by default, and must be enabled in the evaluated configuration; HA authentication and encryption use AES-128 and SHA-1.",
+    "context_phrases": [
+      "trusted paths are used to protect remote administrator authentication",
+      "TLS version 1.1",
+      "HA heartbeat encryption and authentication are disabled by default"
+    ]
+  }
+]
