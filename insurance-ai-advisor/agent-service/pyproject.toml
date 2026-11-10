@@ -1,0 +1,59 @@
+[project]
+name = "agent-service"
+version = "0.1.0"
+description = "「安心保」保险 AI 智能顾问 - 后端服务"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+    # ---- Web 框架 ----
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.34",
+    "python-multipart>=0.0.18",
+    "sse-starlette>=2.2",
+    # ---- 配置与数据校验 ----
+    "pydantic>=2.10",
+    "pydantic-settings>=2.7",
+    # ---- 数据库 ----
+    "sqlalchemy[asyncio]>=2.0.36",
+    "asyncpg>=0.30",
+    "alembic>=1.14",
+    "redis>=5.2",
+    # ---- 鉴权 ----
+    "python-jose[cryptography]>=3.3",
+    "bcrypt>=4.2",
+    # ---- 大模型与 Agent 编排 ----
+    "langchain>=0.3",
+    "langchain-openai>=0.3",
+    "langgraph>=0.2",
+    # ---- 向量库与向量化 ----
+    "pymilvus>=2.5",
+    "sentence-transformers>=3.3",
+    # ---- 通用工具 ----
+    "httpx[socks]>=0.28",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "pytest-asyncio>=0.25",
+    "ruff>=0.8",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.ruff.lint.per-file-ignores]
+# 种子数据里全是长句中文业务文本，强行折行反而降低可读性
+"scripts/seed_data.py" = ["E501"]
+# 提示词是要原样送给模型的中文段落，折行会改变语义
+"app/modules/agent/prompts.py" = ["E501"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]

@@ -1,0 +1,100 @@
+:root {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    "Microsoft YaHei", sans-serif;
+  color: #111827;
+  background: #f5f6f8;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding: 0 28px;
+  height: 60px;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.app-brand {
+  font-size: 17px;
+  font-weight: 700;
+  color: #0f766e;
+  white-space: nowrap;
+}
+
+.app-content {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 24px 20px 96px;
+}
+
+.page-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 4px;
+}
+
+.page-subtitle {
+  color: #6b7280;
+  font-size: 13px;
+  margin-bottom: 20px;
+}
+
+/* 对话气泡：用户靠右、助手靠左 */
+.chat-bubble {
+  padding: 10px 14px;
+  border-radius: 10px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.75;
+  font-size: 13.5px;
+}
+
+.chat-bubble-user {
+  background: #0f766e;
+  color: #ffffff;
+}
+
+.chat-bubble-assistant {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.chat-citation {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed #d1d5db;
+  font-size: 12px;
+  color: #6b7280;
+  line-height: 1.7;
+}
+
+.chat-status {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* 打字光标：流式生成时跟在文字后面 */
+.chat-cursor::after {
+  content: "▍";
+  color: #0f766e;
+  animation: blink 1s step-start infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}

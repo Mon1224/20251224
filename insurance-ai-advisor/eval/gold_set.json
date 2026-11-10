@@ -1,0 +1,452 @@
+[
+  {
+    "id": 1,
+    "question": "康健终身重疾险确诊重疾后能赔多少钱？",
+    "product_code": "XB-CI-001",
+    "clause_no": "1.1",
+    "title": "保险责任",
+    "category": "重疾险",
+    "gold_clause_id": 1
+  },
+  {
+    "id": 2,
+    "question": "康健终身重疾险的等待期是多少天？",
+    "product_code": "XB-CI-001",
+    "clause_no": "1.2",
+    "title": "等待期",
+    "category": "重疾险",
+    "gold_clause_id": 2
+  },
+  {
+    "id": 3,
+    "question": "康健终身重疾险哪些情况不赔？",
+    "product_code": "XB-CI-001",
+    "clause_no": "2.1",
+    "title": "责任免除",
+    "category": "重疾险",
+    "gold_clause_id": 3
+  },
+  {
+    "id": 4,
+    "question": "投保时保险公司问到的健康问题，我需要全部如实回答吗？",
+    "product_code": "XB-CI-001",
+    "clause_no": "3.1",
+    "title": "如实告知义务",
+    "category": "重疾险",
+    "gold_clause_id": 4
+  },
+  {
+    "id": 5,
+    "question": "康健终身重疾险刚买不想要了，能全额退吗？",
+    "product_code": "XB-CI-001",
+    "clause_no": "4.1",
+    "title": "犹豫期与退保",
+    "category": "重疾险",
+    "gold_clause_id": 5
+  },
+  {
+    "id": 6,
+    "question": "康健终身重疾险出险后多久要通知保险公司？",
+    "product_code": "XB-CI-001",
+    "clause_no": "5.1",
+    "title": "理赔申请流程",
+    "category": "重疾险",
+    "gold_clause_id": 6
+  },
+  {
+    "id": 7,
+    "question": "重疾险的轻症和中症分别赔多少？",
+    "product_code": "XB-CI-001",
+    "clause_no": "6.1",
+    "title": "轻症与中症保险金",
+    "category": "重疾险",
+    "gold_clause_id": 39
+  },
+  {
+    "id": 8,
+    "question": "重疾可以赔几次？两次之间要间隔多久？",
+    "product_code": "XB-CI-001",
+    "clause_no": "6.2",
+    "title": "重大疾病多次赔付",
+    "category": "重疾险",
+    "gold_clause_id": 40
+  },
+  {
+    "id": 9,
+    "question": "康健终身重疾险没得重疾就身故了，能赔吗？",
+    "product_code": "XB-CI-001",
+    "clause_no": "6.3",
+    "title": "身故保险金",
+    "category": "重疾险",
+    "gold_clause_id": 41
+  },
+  {
+    "id": 10,
+    "question": "合同成立两年后，保险公司还能以未告知为由解除合同吗？",
+    "product_code": "XB-CI-001",
+    "clause_no": "6.4",
+    "title": "两年不可抗辩",
+    "category": "重疾险",
+    "gold_clause_id": 42
+  },
+  {
+    "id": 11,
+    "question": "忘记交保费了，宽限期有多久？保单会失效吗？",
+    "product_code": "XB-CI-001",
+    "clause_no": "6.5",
+    "title": "宽限期与合同复效",
+    "category": "重疾险",
+    "gold_clause_id": 43
+  },
+  {
+    "id": 12,
+    "question": "少儿重疾险的等待期是多久？",
+    "product_code": "XB-CI-002",
+    "clause_no": "1.2",
+    "title": "等待期",
+    "category": "重疾险",
+    "gold_clause_id": 8
+  },
+  {
+    "id": 13,
+    "question": "大人给孩子投保，大人出事了保费还要继续交吗？",
+    "product_code": "XB-CI-002",
+    "clause_no": "3.1",
+    "title": "投保人豁免",
+    "category": "重疾险",
+    "gold_clause_id": 10
+  },
+  {
+    "id": 14,
+    "question": "小孩得了白血病这类少儿特定重疾，能多赔一笔吗？",
+    "product_code": "XB-CI-002",
+    "clause_no": "5.1",
+    "title": "少儿特定疾病额外给付",
+    "category": "重疾险",
+    "gold_clause_id": 44
+  },
+  {
+    "id": 15,
+    "question": "未成年人不幸身故，最多能赔多少？",
+    "product_code": "XB-CI-002",
+    "clause_no": "5.2",
+    "title": "未成年人身故保险金限额",
+    "category": "重疾险",
+    "gold_clause_id": 45
+  },
+  {
+    "id": 16,
+    "question": "百万医疗险的免赔额是多少？",
+    "product_code": "XB-MI-001",
+    "clause_no": "1.2",
+    "title": "免赔额",
+    "category": "医疗险",
+    "gold_clause_id": 13
+  },
+  {
+    "id": 17,
+    "question": "百万医疗险等待期内生病住院能报吗？",
+    "product_code": "XB-MI-001",
+    "clause_no": "1.3",
+    "title": "等待期",
+    "category": "医疗险",
+    "gold_clause_id": 14
+  },
+  {
+    "id": 18,
+    "question": "百万医疗险哪些费用不报销？",
+    "product_code": "XB-MI-001",
+    "clause_no": "2.1",
+    "title": "责任免除",
+    "category": "医疗险",
+    "gold_clause_id": 15
+  },
+  {
+    "id": 19,
+    "question": "百万医疗险明年还能续保吗？会查健康情况吗？",
+    "product_code": "XB-MI-001",
+    "clause_no": "3.1",
+    "title": "续保规则",
+    "category": "医疗险",
+    "gold_clause_id": 16
+  },
+  {
+    "id": 20,
+    "question": "百万医疗险报销医疗费需要准备哪些材料？",
+    "product_code": "XB-MI-001",
+    "clause_no": "4.1",
+    "title": "理赔申请材料",
+    "category": "医疗险",
+    "gold_clause_id": 17
+  },
+  {
+    "id": 21,
+    "question": "用医保结算和不用医保结算，报销比例一样吗？自费药能报吗？",
+    "product_code": "XB-MI-001",
+    "clause_no": "5.1",
+    "title": "社保结算与自费药报销",
+    "category": "医疗险",
+    "gold_clause_id": 46
+  },
+  {
+    "id": 22,
+    "question": "百万医疗险在私立医院或特需部看病能报销吗？",
+    "product_code": "XB-MI-001",
+    "clause_no": "5.2",
+    "title": "就诊医院范围",
+    "category": "医疗险",
+    "gold_clause_id": 47
+  },
+  {
+    "id": 23,
+    "question": "一年住两次院，免赔额要扣两次吗？家人能共用吗？",
+    "product_code": "XB-MI-001",
+    "clause_no": "5.3",
+    "title": "免赔额累计与家庭共享",
+    "category": "医疗险",
+    "gold_clause_id": 48
+  },
+  {
+    "id": 24,
+    "question": "保证续保期间是几年？期间会因为我理赔过就涨保费吗？",
+    "product_code": "XB-MI-001",
+    "clause_no": "5.4",
+    "title": "保证续保期间",
+    "category": "医疗险",
+    "gold_clause_id": 49
+  },
+  {
+    "id": 25,
+    "question": "高端医疗险可以看完病直接走人、不用自己先垫钱吗？",
+    "product_code": "XB-MI-002",
+    "clause_no": "1.2",
+    "title": "直付服务",
+    "category": "医疗险",
+    "gold_clause_id": 19
+  },
+  {
+    "id": 26,
+    "question": "高端医疗险哪些项目不保？",
+    "product_code": "XB-MI-002",
+    "clause_no": "2.1",
+    "title": "责任免除",
+    "category": "医疗险",
+    "gold_clause_id": 21
+  },
+  {
+    "id": 27,
+    "question": "做核磁共振或者住院手术需要提前申请吗？",
+    "product_code": "XB-MI-002",
+    "clause_no": "3.1",
+    "title": "预授权要求",
+    "category": "医疗险",
+    "gold_clause_id": 22
+  },
+  {
+    "id": 28,
+    "question": "高端医疗险包含看牙和配眼镜吗？",
+    "product_code": "XB-MI-002",
+    "clause_no": "4.2",
+    "title": "牙科与眼科责任",
+    "category": "医疗险",
+    "gold_clause_id": 51
+  },
+  {
+    "id": 29,
+    "question": "在国外突发疾病，紧急救援和转运费用报吗？",
+    "product_code": "XB-MI-002",
+    "clause_no": "4.3",
+    "title": "紧急救援",
+    "category": "医疗险",
+    "gold_clause_id": 52
+  },
+  {
+    "id": 30,
+    "question": "综合意外险一般保哪些情况？",
+    "product_code": "XB-AC-001",
+    "clause_no": "1.1",
+    "title": "保险责任",
+    "category": "意外险",
+    "gold_clause_id": 23
+  },
+  {
+    "id": 31,
+    "question": "综合意外险有等待期吗？买完多久生效？",
+    "product_code": "XB-AC-001",
+    "clause_no": "1.3",
+    "title": "等待期",
+    "category": "意外险",
+    "gold_clause_id": 25
+  },
+  {
+    "id": 32,
+    "question": "综合意外险的免责情形有哪些？",
+    "product_code": "XB-AC-001",
+    "clause_no": "2.1",
+    "title": "责任免除",
+    "category": "意外险",
+    "gold_clause_id": 26
+  },
+  {
+    "id": 33,
+    "question": "到底什么才算保险意义上的“意外”？",
+    "product_code": "XB-AC-001",
+    "clause_no": "4.1",
+    "title": "意外伤害的定义",
+    "category": "意外险",
+    "gold_clause_id": 53
+  },
+  {
+    "id": 34,
+    "question": "加班猝死，意外险赔吗？",
+    "product_code": "XB-AC-001",
+    "clause_no": "4.2",
+    "title": "猝死不属于意外",
+    "category": "意外险",
+    "gold_clause_id": 54
+  },
+  {
+    "id": 35,
+    "question": "我从事高空作业，能买这个意外险吗？",
+    "product_code": "XB-AC-001",
+    "clause_no": "4.3",
+    "title": "职业类别限制",
+    "category": "意外险",
+    "gold_clause_id": 55
+  },
+  {
+    "id": 36,
+    "question": "意外导致伤残，赔多少钱是怎么算的？",
+    "product_code": "XB-AC-001",
+    "clause_no": "4.4",
+    "title": "伤残等级给付比例",
+    "category": "意外险",
+    "gold_clause_id": 56
+  },
+  {
+    "id": 37,
+    "question": "意外住院每天有补贴吗？最多补多少天？",
+    "product_code": "XB-AC-001",
+    "clause_no": "4.5",
+    "title": "意外住院津贴",
+    "category": "意外险",
+    "gold_clause_id": 57
+  },
+  {
+    "id": 38,
+    "question": "定期寿险的等待期是多久？",
+    "product_code": "XB-LI-001",
+    "clause_no": "1.2",
+    "title": "等待期",
+    "category": "寿险",
+    "gold_clause_id": 29
+  },
+  {
+    "id": 39,
+    "question": "定期寿险哪些情况不赔？",
+    "product_code": "XB-LI-001",
+    "clause_no": "2.1",
+    "title": "责任免除",
+    "category": "寿险",
+    "gold_clause_id": 30
+  },
+  {
+    "id": 40,
+    "question": "身故保险金可以指定给谁？没指定怎么办？",
+    "product_code": "XB-LI-001",
+    "clause_no": "3.1",
+    "title": "受益人指定",
+    "category": "寿险",
+    "gold_clause_id": 31
+  },
+  {
+    "id": 41,
+    "question": "全残到底是怎么定义的？",
+    "product_code": "XB-LI-001",
+    "clause_no": "4.1",
+    "title": "全残的定义",
+    "category": "寿险",
+    "gold_clause_id": 58
+  },
+  {
+    "id": 42,
+    "question": "酒驾出事故身故，寿险会赔吗？",
+    "product_code": "XB-LI-001",
+    "clause_no": "4.2",
+    "title": "责任免除（酒驾与无证驾驶）",
+    "category": "寿险",
+    "gold_clause_id": 59
+  },
+  {
+    "id": 43,
+    "question": "定期寿险最高能买多少保额？多大年龄能买？",
+    "product_code": "XB-LI-001",
+    "clause_no": "4.3",
+    "title": "投保年龄与保险金额",
+    "category": "寿险",
+    "gold_clause_id": 60
+  },
+  {
+    "id": 44,
+    "question": "养老年金什么时候开始领？可以选几岁领吗？",
+    "product_code": "XB-AN-001",
+    "clause_no": "1.2",
+    "title": "领取起始年龄",
+    "category": "年金险",
+    "gold_clause_id": 33
+  },
+  {
+    "id": 45,
+    "question": "年金险中途退保能拿回多少钱？",
+    "product_code": "XB-AN-001",
+    "clause_no": "2.1",
+    "title": "退保与现金价值",
+    "category": "年金险",
+    "gold_clause_id": 34
+  },
+  {
+    "id": 46,
+    "question": "急用钱可以用保单贷款吗？还能减保吗？",
+    "product_code": "XB-AN-001",
+    "clause_no": "3.1",
+    "title": "减保与保单贷款",
+    "category": "年金险",
+    "gold_clause_id": 35
+  },
+  {
+    "id": 47,
+    "question": "年金保证领几年？领了一半人没了怎么办？",
+    "product_code": "XB-AN-001",
+    "clause_no": "4.1",
+    "title": "保证领取期间",
+    "category": "年金险",
+    "gold_clause_id": 61
+  },
+  {
+    "id": 48,
+    "question": "分红型年金的分红是保证的吗？",
+    "product_code": "XB-AN-001",
+    "clause_no": "4.3",
+    "title": "红利分配",
+    "category": "年金险",
+    "gold_clause_id": 63
+  },
+  {
+    "id": 49,
+    "question": "交通意外险保障哪些交通工具？",
+    "product_code": "XB-AC-002",
+    "clause_no": "1.2",
+    "title": "公共交通工具的范围",
+    "category": "意外险",
+    "gold_clause_id": 37
+  },
+  {
+    "id": 50,
+    "question": "飞机延误有赔偿吗？赔多少？",
+    "product_code": "XB-AC-002",
+    "clause_no": "3.2",
+    "title": "交通工具延误责任",
+    "category": "意外险",
+    "gold_clause_id": 65
+  }
+]

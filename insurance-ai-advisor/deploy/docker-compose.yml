@@ -1,0 +1,170 @@
+name: insurance-ai-advisor
+
+services:
+  # ==================== 关系型数据库 ====================
+  postgres:
+    image: postgres:16
+    container_name: insurance-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: insurance
+      POSTGRES_PASSWORD: insurance
+      POSTGRES_DB: postgres
+      TZ: Asia/Shanghai
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./volumes/postgres:/var/lib/postgresql/data
+      # 首次启动会自动执行这里的建库脚本，创建 insurance_biz 和 insurance_agent
+      - ./initdb:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U insurance"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ==================== 缓存 / 会话状态 ====================
+  redis:
+    image: redis:7-alpine
+    container_name: insurance-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./volumes/redis:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ==================== 向量数据库（Milvus v3.0.2）====================
+  # 以下 etcd / minio / milvus 三段取自 Milvus 官方 v3.0.2 的 standalone 编排文件
+  etcd:
+    container_name: milvus-etcd
+    image: quay.io/coreos/etcd:v3.5.25
+    restart: unless-stopped
+    environment:
+      - ETCD_AUTO_COMPACTION_MODE=revision
+      - ETCD_AUTO_COMPACTION_RETENTION=1000
+      - ETCD_QUOTA_BACKEND_BYTES=4294967296
+      - ETCD_SNAPSHOT_COUNT=50000
+    volumes:
+      - ./volumes/etcd:/etcd
+    command: etcd -advertise-client-urls=http://etcd:2379 -listen-client-urls http://0.0.0.0:2379 --data-dir /etcd
+    healthcheck:
+      test: ["CMD", "etcdctl", "endpoint", "health"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  minio:
+    container_name: milvus-minio
+    # MinIO 官方已从 Docker Hub 撤下镜像，这里用 Milvus 官方维护的镜像源
+    image: milvusdb/minio:RELEASE.2024-12-18T13-15-44Z
+    restart: unless-stopped
+    environment:
+      # 注意：MINIO_ACCESS_KEY / MINIO_SECRET_KEY 是旧名字，新版 MinIO 已不再识别
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9001:9001"
+      - "9000:9000"
+    volumes:
+      - ./volumes/minio:/minio_data
+    command: minio server /minio_data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  milvus:
+    container_name: milvus-standalone
+    image: milvusdb/milvus:v3.0.2
+    restart: unless-stopped
+    command: ["milvus", "run", "standalone"]
+    security_opt:
+      - seccomp:unconfined
+    environment:
+      MINIO_REGION: us-east-1
+      ETCD_ENDPOINTS: etcd:2379
+      MINIO_ADDRESS: minio:9000
+    volumes:
+      - ./volumes/milvus:/var/lib/milvus
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9091/healthz"]
+      interval: 30s
+      start_period: 90s
+      timeout: 20s
+      retries: 3
+    ports:
+      - "19530:19530"
+      - "9091:9091"
+    depends_on:
+      - etcd
+      - minio
+
+  # ==================== 可选：Milvus 网页管理台 ====================
+  # 如需可视化查看向量集合，取消下面的注释。tag 若拉取失败可直接删掉整个服务。
+  # attu:
+  #   container_name: milvus-attu
+  #   image: zilliz/attu:v2.5
+  #   environment:
+  #     MILVUS_URL: milvus:19530
+  #   ports:
+  #     - "8000:3000"
+  #   depends_on:
+  #     - milvus
+
+  # ==================== 后端服务 ====================
+  agent-service:
+    build:
+      context: ../agent-service
+    container_name: insurance-agent-service
+    restart: unless-stopped
+    # 密钥从 agent-service/.env 读，不用在编排文件里重复一遍
+    env_file:
+      - ../agent-service/.env
+    environment:
+      # 注意：容器之间用服务名互相访问，不是 localhost。
+      # 下面这些会覆盖 .env 里指向本机的地址。
+      BIZ_DB_URL: postgresql+asyncpg://insurance:insurance@postgres:5432/insurance_biz
+      AGENT_DB_URL: postgresql+asyncpg://insurance:insurance@postgres:5432/insurance_agent
+      REDIS_URL: redis://redis:6379/0
+      MILVUS_URI: http://milvus:19530
+      # 宿主机上的模型挂到容器内的 /models，路径要跟着改
+      EMBEDDING_MODEL_PATH: /models/Qwen3-Embedding-0.6B
+      RERANKER_MODEL_PATH: /models/bge-reranker-v2-m3
+    volumes:
+      # 模型文件很大且只读，挂载进去而不是打进镜像
+      - E:/models:/models:ro
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      milvus:
+        condition: service_started
+
+  # ==================== 前端 ====================
+  frontend:
+    build:
+      context: ../frontend
+    container_name: insurance-frontend
+    restart: unless-stopped
+    ports:
+      # 宿主机 8080 -> 容器 80，避开可能被占用的 80 端口
+      - "8080:80"
+    depends_on:
+      - agent-service
+
+volumes:
+  postgres:
+  redis:
+  etcd:
+  minio:
+  milvus:
